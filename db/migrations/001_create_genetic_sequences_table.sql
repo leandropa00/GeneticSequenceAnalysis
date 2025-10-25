@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS genetic_sequences (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
     type VARCHAR(10) NOT NULL,
     sequence LONGTEXT NOT NULL,
