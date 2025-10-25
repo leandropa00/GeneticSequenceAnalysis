@@ -1,4 +1,4 @@
-.PHONY: build up down restart logs clean rebuild test package help
+.PHONY: build up down restart logs rebuild test package help
 
 help:
 	@echo "Comandos disponibles:"
@@ -9,7 +9,6 @@ help:
 	@echo "  make logs       - Ver logs de todos los contenedores"
 	@echo "  make logs-app   - Ver logs de la aplicación"
 	@echo "  make logs-db    - Ver logs de la base de datos"
-	@echo "  make clean      - Detener y eliminar contenedores, redes y volúmenes"
 	@echo "  make rebuild    - Limpiar y reconstruir todo desde cero"
 	@echo "  make test       - Ejecutar tests con Maven"
 	@echo "  make package    - Empaquetar la aplicación con Maven"
@@ -37,11 +36,7 @@ logs-app:
 logs-db:
 	docker compose logs -f mysql
 
-clean:
-	docker compose down -v --remove-orphans
-	docker system prune -f
-
-rebuild: clean build up
+rebuild: build up
 
 test:
 	mvn clean test
