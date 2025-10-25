@@ -24,8 +24,6 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
       JAVA_OPTS: "-Xms512m -Xmx1024m"
-    ports:
-      - "8080:8080"
     depends_on:
       mysql:
         condition: service_healthy
