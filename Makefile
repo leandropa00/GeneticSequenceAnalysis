@@ -5,7 +5,7 @@ build:
 	@docker compose build --no-cache
 
 run:
-	@echo "Starting database..."
+	@echo "Starting application..."
 	@docker compose run --rm app
 
 down:
