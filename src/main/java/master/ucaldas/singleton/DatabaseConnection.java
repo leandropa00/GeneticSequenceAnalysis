@@ -37,7 +37,6 @@ public class DatabaseConnection {
                 }
                 
                 connection = DriverManager.getConnection(url, username, password);
-                System.out.println("Conexión a base de datos establecida");
                 return;
             } catch (ClassNotFoundException e) {
                 System.err.println("Error al conectar a la base de datos: " + e.getMessage());
