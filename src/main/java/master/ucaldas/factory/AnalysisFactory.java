@@ -5,19 +5,19 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import master.ucaldas.strategy.AlignmentAnalysis;
-import master.ucaldas.strategy.AnalysisStrategy;
+import master.ucaldas.strategy.IAnalysisStrategy;
 import master.ucaldas.strategy.MotifDetectionAnalysis;
 import master.ucaldas.strategy.StructurePredictionAnalysis;
 
 public class AnalysisFactory {
-    private final Map<AnalysisType, Supplier<AnalysisStrategy>> strategies = new HashMap<>();
+    private final Map<AnalysisType, Supplier<IAnalysisStrategy>> strategies = new HashMap<>();
 
     public AnalysisFactory() {
         strategies.put(AnalysisType.ALIGNMENT, AlignmentAnalysis::new);
         strategies.put(AnalysisType.STRUCTURE_PREDICTION, StructurePredictionAnalysis::new);
     }
 
-    public AnalysisStrategy createAnalysis(AnalysisType type, String... params) {
+    public IAnalysisStrategy createAnalysis(AnalysisType type, String... params) {
         if (type == AnalysisType.MOTIF_DETECTION) {
             if (params.length == 0 || params[0] == null || params[0].isEmpty()) {
                 throw new IllegalArgumentException("Se requiere un motivo para detección");
@@ -25,7 +25,7 @@ public class AnalysisFactory {
             return new MotifDetectionAnalysis(params[0]);
         }
 
-        Supplier<AnalysisStrategy> supplier = strategies.get(type);
+        Supplier<IAnalysisStrategy> supplier = strategies.get(type);
         if (supplier == null) {
             throw new IllegalArgumentException("Tipo de análisis no soportado: " + type);
         }
