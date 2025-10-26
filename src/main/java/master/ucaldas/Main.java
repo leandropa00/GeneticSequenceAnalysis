@@ -122,7 +122,7 @@ public class Main {
         System.out.println("VER SECUENCIAS ALMACENADAS");
         System.out.println("─".repeat(80));
         System.out.println("1. Ver todas las secuencias");
-        System.out.println("2. Filtrar por tipo (DNA/Protein)");
+        System.out.println("2. Filtrar por tipo (DNA/RNA/Protein)");
         System.out.println("3. Buscar por nombre");
         System.out.println("0. Volver");
         System.out.println("─".repeat(80));
@@ -145,7 +145,7 @@ public class Main {
     }
 
     private static void viewSequencesByType() {
-        System.out.print("Ingrese el tipo (DNA/Protein): ");
+        System.out.print("Ingrese el tipo (DNA/RNA/Protein): ");
         String type = scanner.nextLine().trim();
 
         List<GeneticSequence> sequences = facade.getSequencesByType(type);
