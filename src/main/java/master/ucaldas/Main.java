@@ -64,7 +64,7 @@ public class Main {
     private static void printWelcome() {
         System.out.println("\n" + "═".repeat(80));
         System.out.println("  SISTEMA DE ANÁLISIS DE SECUENCIAS GENÉTICAS");
-        System.out.println("  Universidad de Caldas - Maestría");
+        System.out.println("  Universidad de Caldas - Maestría en Ingeniería Computacional");
         System.out.println("═".repeat(80));
     }
 
