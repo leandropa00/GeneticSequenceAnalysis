@@ -55,7 +55,7 @@ public class AnalysisProxy implements IAnalysisStrategy {
             return storage.getResult(cacheKey);
         }
 
-        System.out.println("→ Ejecutando análisis...");
+        System.out.println("Ejecutando análisis...");
         AnalysisResult result = realAnalysis.execute(sequences);
 
         storage.storeResult(cacheKey, result);

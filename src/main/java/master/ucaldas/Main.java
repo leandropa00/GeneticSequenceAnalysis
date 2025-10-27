@@ -104,7 +104,7 @@ public class Main {
             filePath = scanner.nextLine().trim();
         }
 
-        System.out.println("\n→ Cargando secuencias...");
+        System.out.println("\nCargando secuencias...");
         int count = facade.loadSequencesFromFASTA(filePath);
 
         if (count > 0) {
@@ -325,20 +325,78 @@ public class Main {
 
             System.out.print("\n¿Desea exportar el reporte a un archivo? (S/N): ");
             if (scanner.nextLine().trim().toUpperCase().equals("S")) {
+                System.out.println("\nSeleccione el formato de exportación:");
+                System.out.println("1. Texto plano (TXT)");
+                System.out.println("2. CSV (Comma Separated Values)");
+                System.out.print("Opción: ");
+                
+                int formatChoice = readInt("");
+                String extension;
+                String content;
+                
+                if (formatChoice == 2) {
+                    extension = ".csv";
+                    
+                    List<String> availableTypes = report.getAvailableAnalysisTypes();
+                    
+                    if (availableTypes.isEmpty()) {
+                        System.out.println("No hay datos de análisis para exportar.");
+                        return;
+                    }
+                    
+                    if (availableTypes.size() > 1) {
+                        System.out.println("\nTipos de análisis disponibles en el reporte:");
+                        int index = 1;
+                        for (String type : availableTypes) {
+                            String typeName = getAnalysisTypeName(type);
+                            int count = report.countByType(type);
+                            System.out.println(index + ". " + typeName + " (" + count + " registros)");
+                            index++;
+                        }
+                        System.out.println(index + ". Exportar todos (formato genérico)");
+                        
+                        System.out.print("\nSeleccione el tipo de análisis a exportar: ");
+                        int typeChoice = readInt("");
+                        
+                        if (typeChoice > 0 && typeChoice <= availableTypes.size()) {
+                            String selectedType = availableTypes.get(typeChoice - 1);
+                            content = report.exportToCSV(selectedType);
+                        } else {
+                            content = report.exportToCSV("ALL");
+                        }
+                    } else {
+                        String selectedType = availableTypes.get(0);
+                        content = report.exportToCSV(selectedType);
+                        System.out.println("Exportando " + getAnalysisTypeName(selectedType));
+                    }
+                } else {
+                    extension = ".txt";
+                    content = report.export();
+                }
+                
                 System.out.print("Nombre del archivo (sin extensión): ");
                 String filename = scanner.nextLine().trim();
-                exportReport(report, "reports/" + filename + ".txt");
+                exportReport(content, "reports/" + filename + extension);
             }
         }
     }
 
-    private static void exportReport(Report report, String filename) {
+    private static void exportReport(String content, String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write(report.export());
+            writer.write(content);
             System.out.println("Reporte exportado a: " + filename);
         } catch (IOException e) {
             System.err.println("Error exportando reporte: " + e.getMessage());
         }
+    }
+
+    private static String getAnalysisTypeName(String type) {
+        return switch (type) {
+            case "ALIGNMENT" -> "Análisis de Alineamiento";
+            case "MOTIF_DETECTION" -> "Detección de Motivos";
+            case "STRUCTURE_PREDICTION" -> "Predicción de Estructura";
+            default -> type;
+        };
     }
 
     // ========== MENÚ 5: CONFIGURATION ==========

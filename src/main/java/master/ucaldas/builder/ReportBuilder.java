@@ -41,6 +41,7 @@ public class ReportBuilder {
         section.append("└").append("─".repeat(79));
 
         report.addSection(section.toString());
+        report.addAnalysisResult(result);
         return this;
     }
 
@@ -83,6 +84,7 @@ public class ReportBuilder {
         section.append("└").append("─".repeat(79));
 
         report.addSection(section.toString());
+        report.addAnalysisResult(result);
         return this;
     }
 
@@ -113,6 +115,7 @@ public class ReportBuilder {
         section.append("└").append("─".repeat(79));
 
         report.addSection(section.toString());
+        report.addAnalysisResult(result);
         return this;
     }
 
