@@ -10,7 +10,7 @@ Sistema para la gestión y análisis de secuencias genéticas implementado en Ja
   - Detección de motivos genéticos
   - Predicción de estructuras secundarias
 - **Sistema de Caché**: Almacenamiento inteligente de resultados para optimizar rendimiento
-- **Generación de Reportes**: Exportación de análisis en formato texto
+- **Generación de Reportes**: Exportación de análisis en formato texto o CSV
 - **Interfaz Interactiva**: Menú de consola intuitivo y completo
 - **Persistencia**: Base de datos MySQL para almacenamiento permanente
 
@@ -91,7 +91,7 @@ Nombre de la secuencia: Seq001
 ### 4. Generar Reportes
 - Reporte de análisis de la sesión actual
 - Reporte de todos los análisis en caché
-- Exportación a archivo de texto
+- Exportación a archivo de texto o CSV
 
 ### 5. Configuración
 - Cambiar ruta FASTA por defecto
