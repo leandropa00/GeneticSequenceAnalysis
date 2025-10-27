@@ -105,46 +105,46 @@ Elimina los resultados de análisis almacenados en memoria.
 
 ```
 GeneticSequenceAnalysis/
-├── data/                           # Archivos de entrada
-│   └── sequences.fasta            # Secuencias de ejemplo
+├── data/                                               # Archivos de entrada
+│   └── sequences.fasta                                 # Secuencias de ejemplo
 ├── db/
-│   └── migrations/                # Scripts SQL de migración
+│   └── migrations/                                     # Scripts SQL de migración
 │       └── 001_create_genetic_sequences_table.sql
-├── reports/                       # Reportes generados (exportados)
+├── reports/                                            # Reportes generados (exportados)
 ├── src/
 │   └── main/
 │       └── java/master/ucaldas/
-│           ├── builder/           # Patrón Builder (Reportes)
+│           ├── builder/                                # Patrón Builder (Reportes)
 │           │   ├── Report.java
 │           │   └── ReportBuilder.java
-│           ├── dao/               # Acceso a datos
+│           ├── dao/                                    # Acceso a datos
 │           │   └── SequenceDAO.java
-│           ├── facade/            # Patrón Facade
+│           ├── facade/                                 # Patrón Facade
 │           │   └── GeneticAnalysisFacade.java
-│           ├── factory/           # Patrón Factory
+│           ├── factory/                                # Patrón Factory
 │           │   ├── AnalysisFactory.java
 │           │   └── AnalysisType.java
-│           ├── model/             # Modelos de dominio
+│           ├── model/                                  # Modelos de dominio
 │           │   ├── AnalysisResult.java
 │           │   └── GeneticSequence.java
-│           ├── proxy/             # Patrón Proxy
+│           ├── proxy/                                  # Patrón Proxy
 │           │   └── AnalysisProxy.java
-│           ├── singleton/         # Patrón Singleton
+│           ├── singleton/                              # Patrón Singleton
 │           │   ├── AnalysisResultStorage.java
 │           │   ├── Configuration.java
 │           │   └── DatabaseConnection.java
-│           ├── strategy/          # Patrón Strategy
+│           ├── strategy/                               # Patrón Strategy
 │           │   ├── IAnalysisStrategy.java
 │           │   ├── AlignmentAnalysis.java
 │           │   ├── MotifDetectionAnalysis.java
 │           │   └── StructurePredictionAnalysis.java
-│           ├── util/              # Utilidades
+│           ├── util/                                   # Utilidades
 │           │   └── FASTAReader.java
-│           └── Main.java          # Punto de entrada
-├── docker-compose.yml             # Configuración Docker Compose
-├── Dockerfile                     # Imagen de la aplicación
-├── Makefile                       # Comandos simplificados
-└── pom.xml                        # Configuración Maven
+│           └── Main.java                               # Punto de entrada
+├── docker-compose.yml                                  # Configuración Docker Compose
+├── Dockerfile                                          # Imagen de la aplicación
+├── Makefile                                            # Comandos simplificados
+└── pom.xml                                             # Configuración Maven
 ```
 
 ## Tecnologías Utilizadas
