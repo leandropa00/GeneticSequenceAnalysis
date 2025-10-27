@@ -73,7 +73,6 @@ public class ReportBuilder {
                 if (i < positions.size() - 1) {
                     section.append(", ");
                 }
-                // Salto de línea cada 10 posiciones
                 if ((i + 1) % 10 == 0 && i < positions.size() - 1) {
                     section.append("\n│  ");
                 }
