@@ -121,6 +121,7 @@ GeneticSequenceAnalysis/
 │           │   └── SequenceDAO.java
 │           ├── facade/                                 # Patrón Facade
 │           │   └── GeneticAnalysisFacade.java
+│           │   └── MenuFacade.java
 │           ├── factory/                                # Patrón Factory
 │           │   ├── AnalysisFactory.java
 │           │   └── AnalysisType.java
