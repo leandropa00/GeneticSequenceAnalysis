@@ -1,7 +1,5 @@
 package master.ucaldas;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,22 +9,18 @@ import master.ucaldas.builder.Report;
 import master.ucaldas.facade.GeneticAnalysisFacade;
 import master.ucaldas.model.AnalysisResult;
 import master.ucaldas.model.GeneticSequence;
-import master.ucaldas.singleton.Configuration;
-import master.ucaldas.singleton.DatabaseConnection;
 
 public class Main {
     private static GeneticAnalysisFacade facade;
     private static Scanner scanner;
-    private static List<AnalysisResult> sessionResults;
 
     public static void main(String[] args) {
         facade = new GeneticAnalysisFacade();
         scanner = new Scanner(System.in);
-        sessionResults = new ArrayList<>();
 
         printWelcome();
 
-        if (!DatabaseConnection.getInstance().isConnected()) {
+        if (!facade.isDatabaseConnected()) {
             System.err.println("\nERROR: No se pudo conectar a la base de datos.");
             System.err.println("  Asegúrese de que MySQL esté ejecutándose.");
             return;
@@ -57,7 +51,7 @@ public class Main {
             }
         }
 
-        DatabaseConnection.getInstance().closeConnection();
+        facade.closeDatabaseConnection();
         scanner.close();
     }
 
@@ -89,12 +83,11 @@ public class Main {
         System.out.println("CARGAR SECUENCIAS DESDE FASTA");
         System.out.println("─".repeat(80));
 
-        Configuration config = facade.getConfiguration();
-        String defaultPath = config.getFastaPath();
+        String defaultPath = facade.getFastaPath();
 
         System.out.println("Ruta por defecto: " + defaultPath);
 
-        String filePath = defaultPath;
+        String filePath;
 
         System.out.print("¿Usar ruta por defecto? (S/N): ");
         if (scanner.nextLine().trim().toUpperCase().equals("S")) {
@@ -229,7 +222,7 @@ public class Main {
         String seq2 = scanner.nextLine().trim();
 
         AnalysisResult result = facade.performAlignment(seq1, seq2);
-        sessionResults.add(result);
+        facade.addSessionResult(result);
 
         System.out.println("\nAnálisis completado");
         System.out.println("  Similitud: " + String.format("%.2f%%", result.getData("similarity_percentage")));
@@ -250,7 +243,7 @@ public class Main {
         String motif = scanner.nextLine().trim();
 
         AnalysisResult result = facade.performMotifDetection(seqName, motif);
-        sessionResults.add(result);
+        facade.addSessionResult(result);
 
         System.out.println("\nAnálisis completado");
         System.out.println("  Ocurrencias: " + result.getData("occurrences"));
@@ -268,7 +261,7 @@ public class Main {
         String seqName = scanner.nextLine().trim();
 
         AnalysisResult result = facade.performStructurePrediction(seqName);
-        sessionResults.add(result);
+        facade.addSessionResult(result);
 
         System.out.println("\nAnálisis completado");
         System.out.println("  Estructura predicha: " + result.getData("predicted_structure"));
@@ -293,15 +286,15 @@ public class Main {
 
         int choice = readInt("Seleccione una opción: ");
 
-        Report report = null;
+        Report report;
 
         switch (choice) {
             case 1 -> {
-                if (sessionResults.isEmpty()) {
+                if (facade.getSessionResultsCount() == 0) {
                     System.out.println("No hay análisis en esta sesión");
                     return;
                 }
-                report = facade.generateMultiAnalysisReport(sessionResults,
+                report = facade.generateMultiAnalysisReport(facade.getSessionResults(),
                         "REPORTE DE ANÁLISIS GENÉTICOS - SESIÓN ACTUAL");
             }
             case 2 -> {
@@ -348,7 +341,7 @@ public class Main {
                         System.out.println("\nTipos de análisis disponibles en el reporte:");
                         int index = 1;
                         for (String type : availableTypes) {
-                            String typeName = getAnalysisTypeName(type);
+                            String typeName = facade.getAnalysisTypeName(type);
                             int count = report.countByType(type);
                             System.out.println(index + ". " + typeName + " (" + count + " registros)");
                             index++;
@@ -367,7 +360,7 @@ public class Main {
                     } else {
                         String selectedType = availableTypes.get(0);
                         content = report.exportToCSV(selectedType);
-                        System.out.println("Exportando " + getAnalysisTypeName(selectedType));
+                        System.out.println("Exportando " + facade.getAnalysisTypeName(selectedType));
                     }
                 } else {
                     extension = ".txt";
@@ -376,27 +369,14 @@ public class Main {
                 
                 System.out.print("Nombre del archivo (sin extensión): ");
                 String filename = scanner.nextLine().trim();
-                exportReport(content, "reports/" + filename + extension);
+                try {
+                    facade.exportReport(content, "reports/" + filename + extension);
+                    System.out.println("Reporte exportado a: reports/" + filename + extension);
+                } catch (IOException e) {
+                    System.err.println("Error exportando reporte: " + e.getMessage());
+                }
             }
         }
-    }
-
-    private static void exportReport(String content, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write(content);
-            System.out.println("Reporte exportado a: " + filename);
-        } catch (IOException e) {
-            System.err.println("Error exportando reporte: " + e.getMessage());
-        }
-    }
-
-    private static String getAnalysisTypeName(String type) {
-        return switch (type) {
-            case "ALIGNMENT" -> "Análisis de Alineamiento";
-            case "MOTIF_DETECTION" -> "Detección de Motivos";
-            case "STRUCTURE_PREDICTION" -> "Predicción de Estructura";
-            default -> type;
-        };
     }
 
     // ========== MENÚ 5: CONFIGURATION ==========
@@ -406,11 +386,9 @@ public class Main {
         System.out.println("CONFIGURACIÓN");
         System.out.println("─".repeat(80));
 
-        Configuration config = facade.getConfiguration();
-
         System.out.println("Configuración actual:");
-        System.out.println("  Ruta FASTA: " + config.getFastaPath());
-        System.out.println("  Longitud mínima: " + config.getMinSequenceLength() + " bases");
+        System.out.println("  Ruta FASTA: " + facade.getFastaPath());
+        System.out.println("  Longitud mínima: " + facade.getMinSequenceLength() + " bases");
         System.out.println("  Análisis en caché: " + facade.getCachedAnalysisCount());
         System.out.println("  Secuencias en BD: " + facade.countSequences());
 
@@ -424,12 +402,12 @@ public class Main {
             case 1 -> {
                 System.out.print("Nueva ruta FASTA: ");
                 String path = scanner.nextLine().trim();
-                config.setFastaPath(path);
+                facade.setFastaPath(path);
                 System.out.println("Ruta actualizada");
             }
             case 2 -> {
                 int minLength = readInt("Nueva longitud mínima: ");
-                config.setMinSequenceLength(minLength);
+                facade.setMinSequenceLength(minLength);
                 System.out.println("Longitud mínima actualizada");
             }
             case 0 -> {

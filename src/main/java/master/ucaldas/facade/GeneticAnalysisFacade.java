@@ -1,6 +1,9 @@
 package master.ucaldas.facade;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import master.ucaldas.builder.Report;
@@ -13,21 +16,24 @@ import master.ucaldas.model.GeneticSequence;
 import master.ucaldas.proxy.AnalysisProxy;
 import master.ucaldas.singleton.AnalysisResultStorage;
 import master.ucaldas.singleton.Configuration;
+import master.ucaldas.singleton.DatabaseConnection;
 import master.ucaldas.strategy.IAnalysisStrategy;
 import master.ucaldas.util.FASTAReader;
 
 public class GeneticAnalysisFacade {
 
-    private SequenceDAO sequenceDAO;
-    private Configuration config;
-    private AnalysisResultStorage storage;
-    private AnalysisFactory analysisFactory;
+    private final SequenceDAO sequenceDAO;
+    private final Configuration config;
+    private final AnalysisResultStorage storage;
+    private final AnalysisFactory analysisFactory;
+    private final List<AnalysisResult> sessionResults;
 
     public GeneticAnalysisFacade() {
         this.sequenceDAO = new SequenceDAO();
         this.config = Configuration.getInstance();
         this.storage = AnalysisResultStorage.getInstance();
         this.analysisFactory = new AnalysisFactory();
+        this.sessionResults = new ArrayList<>();
     }
 
     // ========== SEQUENCES MANAGEMENT ==========
@@ -169,5 +175,65 @@ public class GeneticAnalysisFacade {
 
     public int getCachedAnalysisCount() {
         return storage.getResultCount();
+    }
+
+    // ========== DATABASE CONNECTION ==========
+    public boolean isDatabaseConnected() {
+        return DatabaseConnection.getInstance().isConnected();
+    }
+
+    public void closeDatabaseConnection() {
+        DatabaseConnection.getInstance().closeConnection();
+    }
+
+    // ========== SESSION RESULTS MANAGEMENT ==========
+    public void addSessionResult(AnalysisResult result) {
+        sessionResults.add(result);
+    }
+
+    public List<AnalysisResult> getSessionResults() {
+        return new ArrayList<>(sessionResults);
+    }
+
+    public int getSessionResultsCount() {
+        return sessionResults.size();
+    }
+
+    public void clearSessionResults() {
+        sessionResults.clear();
+    }
+
+    // ========== REPORT EXPORT ==========
+    public void exportReport(String content, String filename) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write(content);
+        }
+    }
+
+    // ========== CONFIGURATION HELPERS ==========
+    public void setFastaPath(String path) {
+        config.setFastaPath(path);
+    }
+
+    public void setMinSequenceLength(int minLength) {
+        config.setMinSequenceLength(minLength);
+    }
+
+    public String getFastaPath() {
+        return config.getFastaPath();
+    }
+
+    public int getMinSequenceLength() {
+        return config.getMinSequenceLength();
+    }
+
+    // ========== UTILITIES ==========
+    public String getAnalysisTypeName(String type) {
+        return switch (type) {
+            case "ALIGNMENT" -> "Análisis de Alineamiento";
+            case "MOTIF_DETECTION" -> "Detección de Motivos";
+            case "STRUCTURE_PREDICTION" -> "Predicción de Estructura";
+            default -> type;
+        };
     }
 }
